@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-worker
+  namespace: syncloadtest
+  labels:
+    app: locust-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-worker
+  template:
+    metadata:
+      labels:
+        app: locust-worker
+    spec:
+      containers:
+      - name: locust-worker
+        image: synctest-0.5.8
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: LOCUST_MODE
+              value: worker
+            - name: ATTACKED_HOST
+              value: http://locust-master:8089
+            - name: TARGET_IP
+              value: http://retail.com/customers-order
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        ports:
+        - name: master-bind1
+          containerPort: 5557
+        - name: master-bind2
+          containerPort: 5558
+        - name: master-ui
+          containerPort: 8089
+        - name: master-config
+          containerPort: 5005
