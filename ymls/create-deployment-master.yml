@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-master
+  namespace: syncloadtest
+  labels:
+    app: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      containers:
+      - name: locust-master
+        image: synctest-0.5.8
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: LOCUST_MODE
+              value: master
+            - name: ATTACKED_HOST
+              value: http://locust-master:8089
+        ports:
+        - name: master-bind1
+          containerPort: 5557
+        - name: master-bind2
+          containerPort: 5558
+        - name: master-ui
+          containerPort: 8089
+        - name: master-config
+          containerPort: 5005
